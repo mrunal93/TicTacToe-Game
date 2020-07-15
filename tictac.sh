@@ -5,7 +5,9 @@ echo -e "Welcome to Tic-Tac-Toe Game \n----------------------------- \nAs a Tic 
 ROW_SIZE=3
 BOARD_SIZE=$((ROW_SIZE*ROW_SIZE))
 Position=0
-declare -A ticBoard
+userSymbol="0"
+compSymbol="0"
+declare -A board
 
 resetBoard() {
 	for (( position=1; position<=$BOARD_SIZE; position++ ))
@@ -13,10 +15,26 @@ resetBoard() {
 		ticBoard[$position]=0
 	done
 }
+randomGenerator() {
+	randomCheck=$((RANDOM%2))
+}
+
+assignSymbol(){
+	randomGenerator
+	if [ "$randomCheck" == "$userSymbol" ]
+	then
+		userSymbol="X"
+	else
+		compSymbol="X"
+	fi
+	echo "Player Symbol is $userSymbol and Computer_Symbol is $compSymbol "
+
+}
+
 
 tossFirstPlayer(){
-	randomCheck=$((RANDOM%2))
-	if [ $randomCheck -eq $user_symbol ]
+	randomGenerator
+	if [ "$randomCheck" == "$userSymbol" ]
 	then
 		firstPlayer=human
 		echo "HUMAN has won the Toss"
@@ -28,3 +46,4 @@ tossFirstPlayer(){
 }
 
 tossFirstPlayer
+assignSymbol
