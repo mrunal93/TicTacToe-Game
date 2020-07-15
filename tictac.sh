@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 echo -e "Welcome to Tic-Tac-Toe Game \n----------------------------- \nAs a Tic Tac Toe player lets challenge Computer"
 
 ROW_SIZE=3
@@ -18,16 +18,15 @@ resetBoard(){
         	board[$position]=0
         done
 }
-
 displayBoard(){
-        count=0
+	count=0
         for (( count=1; count<=$BOARD_SIZE ; count++ ))
 	do
-		if [ "${board[$count]}" == "0" ]
-              	then
-                	printf  _" "
+             if [ "${board[$count]}" == "0" ]
+               then
+                     printf  _" "
                 else
-                     	printf ${board[$count]}" "
+                     printf ${board[$count]}" "
                 fi
                 if [ $(( $count % $ROW_SIZE )) -eq 0 ]
                 then
@@ -60,121 +59,196 @@ toss(){
 }
 
 validPositionChecker(){
-        if [ $1 -gt 0  -a $1 -le $BOARD_SIZE ]
-        then
-                validator=true
-        fi
-        if [ "$validator" == "true" -a "${board[$1]}" == "0" ]
-        then
-                board[$1]=$2
-        else
-                validator=false
-        fi
+	if [ "$visited" == "false" ]
+	then
+
+        	if [ $1 -gt 0  -a $1 -le $BOARD_SIZE ]
+        	then
+               	validator=true
+        	fi
+        	if [ "$validator" == "true" -a "${board[$1]}" == "0" ]
+        	then
+               		board[$1]=$2
+			visited=true
+        	else
+                	validator=false
+        	fi
+	fi
 
 }
 
 computerPlays(){
-        while [ "$validator" == "false" ]
-        do
-                number=$((RANDOM%9+1))
-                validPositionChecker $number $compSymbol
-        done
-        validator=false
+      	if [ "$visited" == "false" ]
+	then
+		while [ "$validator" == "false" ]
+        	do
+                	number=$((RANDOM%9+1))
+                	validPositionChecker $number $compSymbol
+        	done
+        	validator=false
+	fi
 }
 
 userPlays(){
+
         while [ "$validator" == "false" ]
         do
-                read -p "Please enter the number between 1-9 where insert your $userSymbol in board " input;
+                read -p "Please enter the number between 1-9 where insert your $userSymbol in board " input
                 validPositionChecker $input $userSymbol
-                if [ "$validator" == "false" ]
+		if [ "$validator" == "false" ]
                 then
-                        echo Input not accepted please try again
+                        echo "Input not accepted please try again"
                 fi
         done
         validator=false
+
 }
 
 diagonalEndingTopLeft(){
-        count=0
-        increase_by=$((ROW_SIZE+1))
-        for (( position=1; position <= $BOARD_SIZE; position+=$((ROW_SIZE+1)) ))
-        do
-                if [ ${board[$position]} == $1 ]
-                then
-                        ((count++))
-                fi
-        done
-        if [ $count -eq $ROW_SIZE ]
-        then
-                winnerDisplay $1
-                quit=true
-        fi
+		if [ "$visited" == "false" ]
+		then
+			cell=0
+			count=0
+			increase_by=$((ROW_SIZE+1))
+        		for (( position=1; position <= $BOARD_SIZE; position+=$((ROW_SIZE+1)) ))
+        		do
+                		if [ ${board[$position]} == $1 ]
+                		then
+                        		((count++))
+                		elif [ "$cell" == "0" -a "${board[$position]}" == "0" ]
+				then
+					cell=$position
+				fi
+        		done
+        		if [ $count -eq $ROW_SIZE ]
+        		then
+                	winnerDisplay $1
+                	quit=true
+        		elif [ $count -ne $(($ROW_SIZE-1)) ]
+			then
+			cell=0
+			fi
+		fi
+
 }
 
 diagonalEndingTopRight(){
-        count=0
-        for (( position=$ROW_SIZE; position <= $((BOARD_SIZE+1-ROW_SIZE)); position+=$((ROW_SIZE-1)) )) do
-                if [ ${board[$position]} == $1 ]
-                then
-                        ((count++))
-                fi
-        done
-        if [ $count == $ROW_SIZE ]
-        then
+	if [ "$visited" == "false" ]
+	then
+
+        	count=0
+		cell=0
+        	for (( position=$ROW_SIZE; position <= $((BOARD_SIZE+1-ROW_SIZE)); position+=$((ROW_SIZE-1)) )) do
+                	if [ ${board[$position]} == $1 ]
+                	then
+                        	((count++))
+                	elif [ "$cell" == "0" -a "${board[$position]}" == 0 ]
+			then
+				cell=$position
+			fi
+
+        	done
+        	if [ $count == $ROW_SIZE ]
+        	then
                 winnerDisplay $1
                 quit=true
-        fi
+   		elif [ $count -ne $(($ROW_SIZE-1)) ]
+		then
+		cell=0
+		fi
+	fi
 }
 
 rowChecker(){
-        count=0
-        position=0
-        for (( row=0;row<$ROW_SIZE;row++ )) do
-                count=0
-                for (( col=1; col<=$ROW_SIZE; col++ )) do
-                        position=$(($ROW_SIZE*row+col ))
-                        if [ ${board[$position]} == $1 ]
-                        then
-                                (( count++ ))
-                        fi
-                done
-                if [ $count -eq $ROW_SIZE ]
-                then
-                        winnerDisplay $1
-                        break
-                fi
-        done
-        if [ $count -eq $ROW_SIZE ]
-        then
-                quit=true
+	if [ "$visited" == "false" ]
+	then
+
+        	count=0
+        	position=0
+        	for (( row=0;row<$ROW_SIZE;row++ )) 
+		do
+                	count=0
+			cell=0
+           		for (( col=1; col<=$ROW_SIZE; col++ )) 
+			do
+               			position=$(($ROW_SIZE*row+col ))
+               			if [ ${board[$position]} == $1 ]
+               			then
+                    			(( count++ ))
+                		elif [ "$cell" == "0" -a "${board[$position]}" == 0 ]
+                  		then
+                     			cell=$position
+                  		fi
+
+              		done
+              		if [ $count -eq $ROW_SIZE ]
+              		then
+                        	winnerDisplay $1
+                        	quit=true
+			break
+			elif [ $count -ne $(($ROW_SIZE-1)) ]
+			then
+				cell=0
+			else
+			break
+
+                	fi
+        	done
         fi
 }
 
 columnChecker(){
-       count=0
-       position=0
-       for (( col=1;col<=$ROW_SIZE;col++ )) do
-               count=0
-               for (( row=0; row<=$ROW_SIZE; row++ )) do
-                        position=$(($ROW_SIZE*row+col ))
-                        if [ "${board[$position]}" == "$1" ]
-                        then
-                                (( count++ ))
-                        fi
-                done
-                if [ $count -eq $ROW_SIZE ]
-                then
-                        winnerDisplay $1
-                        break
+	if [ "$visited" == "false" ]
+	then
+       	count=0
+        position=0
+        	for (( col=1;col<=$ROW_SIZE;col++ )) do
+                	count=0
+                	for (( row=0; row<=$ROW_SIZE; row++ )) do
+                        	position=$(($ROW_SIZE*row+col ))
+                        	if [ "${board[$position]}" == "$1" ]
+                        	then
+                                	(( count++ ))
+				elif [ "$cell" == "0" -a "${board[$position]}" == 0 ]
+                  		then
+                     			cell=$position
+                  		fi
 
-                fi
-        done
-        if [ $count -eq $ROW_SIZE ]
-        then
-                quit=true
+              		done
+                	if [ $count -eq $ROW_SIZE ]
+                	then
+                        	winnerDisplay $1
+                        	quit=true
+			break
+               		elif [ $count -ne $(($ROW_SIZE-1)) ]
+               		then
+                  		cell=0
+               		else
+                  	break
+
+                	fi
+        	done
         fi
+
 }
+
+checkMoveToWin(){
+	diagonalEndingTopLeft $compSymbol
+	validPositionChecker $cell $compSymbol
+	diagonalEndingTopRight $compSymbol
+	validPositionChecker	$cell $compSymbol
+	rowChecker $compSymbol
+	validPositionChecker $cell $compSymbol
+	columnChecker $compSymbol
+
+
+}
+
+checkForComp(){
+		validPositionChecker
+		computerPlays
+	}
+
 
 winnerCheck(){
         diagonalEndingTopLeft $1
@@ -186,25 +260,26 @@ winnerCheck(){
 winnerDisplay(){
         if [ $1 == $userSymbol ]
         then
-                echo "User Wins the game"
+                echo You won
         else
-                echo "Computer wins the game"
+                echo Computer won
         fi
 }
-
-
 ticTacToeApplication(){
-        resetBoard
+	resetBoard
         assignSymbol
         toss
         while [ $quit == false ]
         do
                 validator=false
+		valid=false
                 displayBoard
-                userPlays $firstPlay
-                validator=false
+                userPlays
+		validator=false
+		valid=false
                 winnerCheck $userSymbol
-                computerPlays $firstPlay
+                valid=false
+		computerPlays
                 winnerCheck $compSymbol
         done
         displayBoard
