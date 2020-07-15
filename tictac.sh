@@ -219,7 +219,7 @@ columnChecker(){
               		done
                 	if [ $count -eq $ROW_SIZE ]
                 	then
-                        	winnerDisplay $1
+``                        	winnerDisplay $1
                         	quit=true
 			break
                		elif [ $count -ne $(($ROW_SIZE-1)) ]
@@ -242,12 +242,23 @@ checkMoveToWin(){
 	rowChecker $compSymbol
 	validPositionChecker $cell $compSymbol
 	columnChecker $compSymbol
-
+	validPositionChecker $cell $compSymbol
 
 }
 
+blockPlayer(){
+	diagonalEndingTopLeft $userSymbol
+   	validPositionChecker $cell $compSymbol
+    	diagonalEndingTopRight $userSymbol
+   	validPositionChecker $cell $compSymbol
+    	rowChecker $userSymbol
+   	validPositionChecker $cell $compSymbol
+    	columnChecker $userSymbol
+	validPositionChecker $cell $compSymbol
+}
 checkForComp(){
 		validPositionChecker
+		blockPlayer
 		computerPlays
 	}
 
