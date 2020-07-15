@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo -e "Welcome to Tic-Tac-Toe Game \n----------------------------- \nAs a Tic Tac Toe player lets challenge Computer"
 
 ROW_SIZE=3
@@ -7,6 +8,7 @@ userSymbol="O"
 compSymbol="O"
 quit=false
 validator=false
+visited=false
 position=0
 count=0
 
@@ -165,11 +167,11 @@ rowChecker(){
 
         	count=0
         	position=0
-        	for (( row=0;row<$ROW_SIZE;row++ )) 
+        	for (( row=0;row<$ROW_SIZE;row++ ))
 		do
                 	count=0
 			cell=0
-           		for (( col=1; col<=$ROW_SIZE; col++ )) 
+           		for (( col=1; col<=$ROW_SIZE; col++ ))
 			do
                			position=$(($ROW_SIZE*row+col ))
                			if [ ${board[$position]} == $1 ]
@@ -236,7 +238,7 @@ checkMoveToWin(){
 	diagonalEndingTopLeft $compSymbol
 	validPositionChecker $cell $compSymbol
 	diagonalEndingTopRight $compSymbol
-	validPositionChecker	$cell $compSymbol
+	validPositionChecker $cell $compSymbol
 	rowChecker $compSymbol
 	validPositionChecker $cell $compSymbol
 	columnChecker $compSymbol
@@ -272,13 +274,13 @@ ticTacToeApplication(){
         while [ $quit == false ]
         do
                 validator=false
-		valid=false
+		visited=false
                 displayBoard
                 userPlays
 		validator=false
-		valid=false
+		visited=false
                 winnerCheck $userSymbol
-                valid=false
+                visited=false
 		computerPlays
                 winnerCheck $compSymbol
         done
