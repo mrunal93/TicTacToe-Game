@@ -12,7 +12,7 @@ declare -A board
 resetBoard() {
 	for (( position=1; position<=$BOARD_SIZE; position++ ))
 	do
-		ticBoard[$position]=0
+		board[$position]=0
 	done
 }
 randomGenerator() {
@@ -64,18 +64,123 @@ displayBoard()
    }
 
 playerInputChecker(){
-	checker=false
-	displayBoard
+	restBoard
 	assignSymbol
+	validator=false
+	while [ $validator -eq false ]
+	do
+	displayBoard
 	echo "Choose a cell for your $userSymbol "
 	read -p "Enter the choice in range 1 - $BOARD_SIZE : " inputPosition
 
-	if [ $inputPosition -gt 0 -a $inputPosition -le $BOARD_SIZE ]
+		if [ $inputPosition -gt 0 -a $inputPosition -le $BOARD_SIZE ]
+		then
+			echo "Valid choice  $inputPosition in range"
+				validator=true
+			if [ validator -eq true -a ${board[$index]} -eq 0 ]
+				then
+					board[inputPosition]=$userSymbol
+			fi
+		else
+			echo "Invalid position out of range"
+		fi
+		done
+}
+
+columnChecker(){
+	count=0
+	for(( column=1; column<=$ROW_SIZE; column++ ))
+	do
+		for(( row=0; row<=$ROW_SIZE; row++ ))
+		do
+				index=$(($ROW_SIZE*row+column))
+				if [ ${board[$index]}==$1 ]
+				then
+					(( count++ ))
+				fi
+		done
+		if [ $count -eq $ROW_SIZE ]
+		then
+			winner $1
+			quit=true
+		fi
+	done
+}
+
+rowChecker(){
+	count=0
+      	for(( row=0; row<=$ROW_SIZE; row++ ))
+      	do
+		for(( column=1; column<=$ROW_SIZE; column++ ))
+        	do
+            		index=$(($ROW_SIZE*row+column))
+            		if [ ${board[$index]}==$1 ]
+            		then
+               			(( count++ ))
+            		fi
+         	done
+         	if [ $count -eq $ROW_SIZE ]
+         	then
+            		winner $1
+            		quit=true
+         	fi
+      	done
+}
+
+diagonalEndingTopRight(){
+	for (( position=1; position<=$BOARD_SIZE; position+=$((ROW_SIZE+1)) ))
+	do
+		if [ ${board[$position]} -eq $1 ]
+		then
+			((count++))
+		fi
+	done
+
+	if [ $count -eq $ROW_SIZE ]
 	then
-		echo "Valid choice  $inputPosition in range"
-	else
-		echo "Invalid position out of range"
+		winner $1
+		quit=true
 	fi
 
 }
-playerInputChecker
+diagonalEndingTopLeft(){
+	for (( position=$ROW_SIZE; position<=$((BOARD_SIZE+1-ROW_SIZE)); position+=$((ROW_SIZE-1)) ))
+	do
+		if [ ${board[$position]} -eq $1 ]
+		then
+			((count++))
+		fi
+	done
+	if [ $count -eq $BOARD_SIZE ]
+	then
+		winner $1
+		quit=true
+	fi
+
+}
+
+
+winnerChecker(){
+	columnChecker $1
+	rowChecker $1
+	diagonalEndingTopRight $1
+	diagonalEndingTopLeft $1
+}
+
+staticSign(){
+
+	echo $1
+	winner $1
+}
+
+winner(){
+	if [ $1 -eq $userSymbol ]
+	then
+		echo "USER WINS the game"
+	else
+		echo "COMPUTER WINS the Game"
+	fi
+}
+
+	execute=$( staticSign $userSymbol )
+	echo $execute
