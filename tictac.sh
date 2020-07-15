@@ -249,7 +249,7 @@ columnChecker(){
               		done
                 	if [ $count -eq $ROW_SIZE ]
                 	then
-``                        	winnerDisplay $1
+                        	winnerDisplay $1
                         	quit=true
 			break
                		elif [ $count -ne $(($ROW_SIZE-1)) ]
@@ -288,6 +288,14 @@ columnWin(){
         fi
 }
 
+centre(){
+	if [ "$visited" == "false" ]
+        then
+        	mid=$((ROW_SIZE/2))
+                position=$(( $(( ROW_SIZE*mid)) + $((ROW_SIZE-mid)) ))
+                validPositionChecker $position $compSymbol
+        fi
+}
 
 
 
@@ -327,33 +335,34 @@ check_If_Can_Win(){
 }
 
 
+
 function corners(){
         if [ $visited == "false" ]
         then
-                local key=1
+                position=1
                 validPositionChecker 1 $compSymbol
 
                 position=$((ROW_SIZE*0+ROW_SIZE))
-                validPositionChecker $key $compSymbol
+                validPositionChecker $position $compSymbol
 
                 position=$(( ROW_SIZE*$((ROW_SIZE-1)) + 1))
-                validPositionChecker $key $compSymbol
+                validPositionChecker $position $compSymbol
 
                 position=$(( ROW_SIZE*$((ROW_SIZE-1)) + ROW_SIZE))
-                validPositionChecker $key $compSymbol
+                validPositionChecker $position $compSymbol
         fi
 
 }
 
 
-checkForComp(){
-	check_If_Can_Win
-        block
-        corners
-        computerPlay
+#checkForComp(){
+#	check_If_Can_Win
+ #       block
+  #      corners
+   #     computerPlay
 
 
-	}
+#	}
 
 
 winnerCheck(){
@@ -361,6 +370,14 @@ winnerCheck(){
         diagonalEndingTopRight $1
 	rowWin $1
         columnWin $1
+}
+
+plays(){
+	winnerCheck
+	blockPlayer
+	corners
+	centre
+	computerPlays
 }
 
 winnerDisplay(){
@@ -384,9 +401,8 @@ ticTacToeApplication(){
 		validator=false
 		visited=false
                 winnerCheck $userSymbol
-		computerPlays
+		plays
                 visited=false
-		winnerCheck $compSymbol
         done
         displayBoard
 }
