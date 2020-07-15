@@ -45,5 +45,37 @@ tossFirstPlayer(){
 
 }
 
-tossFirstPlayer
-assignSymbol
+displayBoard()
+   {
+      local count=0
+      for (( count=1; count<=$BOARD_SIZE; count++ ))
+      do
+         if [[ "${board[$count]}" -eq "0" ]]
+         then
+            printf _"|"
+         else
+            printf ${board[$count]}" "
+         fi
+         if [ $(( $count % $ROW_SIZE )) -eq 0 ]
+         then
+               echo
+         fi
+      done
+   }
+
+playerInputChecker(){
+	checker=false
+	displayBoard
+	assignSymbol
+	echo "Choose a cell for your $userSymbol "
+	read -p "Enter the choice in range 1 - $BOARD_SIZE : " inputPosition
+
+	if [ $inputPosition -gt 0 -a $inputPosition -le $BOARD_SIZE ]
+	then
+		echo "Valid choice  $inputPosition in range"
+	else
+		echo "Invalid position out of range"
+	fi
+
+}
+playerInputChecker
